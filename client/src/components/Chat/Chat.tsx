@@ -54,6 +54,20 @@ const Chat = ({}: ChatProps): JSX.Element => {
   ) => {
     event.preventDefault();
 
+    // Shake when empty string
+    if (inputValue === "") {
+      if (inputRef.current) {
+        inputRef.current.className = `${inputRef.current?.className} shake`;
+
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.className = `input`;
+          }
+        }, 1000);
+      }
+      return;
+    }
+
     if (inputValue === "") {
       if (inputRef.current) {
         inputRef.current.className = `${inputRef.current?.className} shake`;

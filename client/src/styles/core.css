@@ -37,11 +37,6 @@ main {
   display: flex;
   flex-direction: column;
 }
-.chat-window {
-  height: calc(75vh - var(--header-height));
-  overflow: scroll;
-  padding: 0 var(--page-gutters-responsive);
-}
 .message-block {
   display: block;
   width: 100%;
@@ -49,6 +44,16 @@ main {
   padding: 10px 0px;
   overflow-wrap: break-word;
 }
+.chat-window {
+  height: calc(75vh - var(--header-height));
+  overflow: scroll;
+  padding: 0 var(--page-gutters-responsive);
+}
+
+.input-window {
+  height: 25vh;
+}
+
 .message {
   border: 2px black;
   border-radius: 10px;
@@ -56,25 +61,27 @@ main {
   min-width: var(--message-width);
   min-height: var(--message-height);
   max-height: 120px;
-  opacity: 0;
   font-size: 1.5rem;
+  opacity: 0;
   transition: 150ms;
   transform: translate(100deg);
   box-shadow: 10px 5px 5px black;
   max-width: 100%;
 }
+
 .show {
   transform: translate(0deg);
   opacity: 1;
 }
+
 .message-info {
   display: flex;
   flex-direction: row;
 }
-
-.input-window {
-  height: 25vh;
+.message-info span:last-child {
+  margin-left: 10px;
 }
+
 .input-container {
   height: 100%;
 }
@@ -83,6 +90,38 @@ main {
   height: 100px;
   border-radius: 5px;
 }
+
+/* Shaking input */
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
 /* Loading state */
 @keyframes rotate {
   from {
