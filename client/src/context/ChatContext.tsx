@@ -8,6 +8,7 @@ export enum ChatActionTypes {
   UPDATE_USER = "UPDATE_USER",
   REMOVE_USER = "REMOVE_USER",
   UPDATE_USER_NICKNAME = "UPDATE_USER_NICKNAME",
+  UPDATE_TYPING = "UPDATE_TYPING",
 }
 
 export type ChatActionPayload = {
@@ -16,6 +17,7 @@ export type ChatActionPayload = {
   messages?: MessageType[];
   user?: User;
   nickname?: string;
+  isTyping?: boolean;
 };
 
 export type ChatAction = {
@@ -83,6 +85,15 @@ export const chatReducer = (
       return {
         ...state,
         user: { id: state.user?.id || "", nickname: action.payload?.nickname },
+      };
+    }
+    case ChatActionTypes.UPDATE_TYPING: {
+      const isSelfWriter = state.user?.id === action.payload?.user?.id;
+      return {
+        ...state,
+        ...(!isSelfWriter && {
+          isTyping: action.payload?.isTyping || false,
+        }),
       };
     }
     default:

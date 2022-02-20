@@ -38,6 +38,13 @@ const Chat = ({}: ChatProps): JSX.Element => {
       });
     });
 
+    socket.on(ServerEvents.TYPING, (user: User, isTyping: boolean) => {
+      dispatch({
+        type: ChatActionTypes.UPDATE_TYPING,
+        payload: { user, isTyping },
+      });
+    });
+
     socket.on(ServerEvents.LOGOUT, (disconnectedUser: User) => {
       dispatch({
         type: ChatActionTypes.REMOVE_USER,
@@ -52,6 +59,11 @@ const Chat = ({}: ChatProps): JSX.Element => {
   }, []);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value !== "") {
+      state.user && socket.emit(ClientEvents.TYPING, state.user, true);
+    } else {
+      state.user && socket.emit(ClientEvents.TYPING, state.user, false);
+    }
     setInputValue(event.target.value);
   };
 
@@ -97,6 +109,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
     }
 
     setInputValue("");
+    state.user && socket.emit(ClientEvents.TYPING, state.user, false);
   };
   return (
     <main>

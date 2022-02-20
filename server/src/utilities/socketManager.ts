@@ -79,6 +79,10 @@ export default (
     }
   );
 
+  socket.on(ClientEvents.TYPING, (user: User, isTyping: boolean) => {
+    io.emit(ServerEvents.TYPING, user, isTyping);
+  });
+
   socket.on("disconnect", () => {
     if (socket.data.id) {
       const disconnectedUser = users.find((u) => u.id === socket.data.id);
