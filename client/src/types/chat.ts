@@ -8,4 +8,5 @@ export type Message = {
   text: string;
   timestamp: number;
   sender: User;
+  isThinking: boolean;
 };

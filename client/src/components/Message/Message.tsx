@@ -19,6 +19,8 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
   const date = new Date(message.timestamp);
   const formatedDate = `${date.getHours()}:${date.getMinutes()}`;
 
+  const { isThinking } = message;
+
   return (
     <div
       style={{
@@ -33,6 +35,7 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
           style={{
             float: `${isSender ? "right" : "left"}`,
             backgroundColor: `${isSender ? "#BFE3B4" : "#0047AB"}`,
+            ...(isThinking && { color: "darkgray" }),
           }}
         >
           {message.text}

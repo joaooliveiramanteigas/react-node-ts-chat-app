@@ -8,6 +8,7 @@ export type Message = {
   timestamp: number;
   text: string;
   sender: User;
+  isThinking: boolean;
 };
 
 export enum ClientEvents {
@@ -30,7 +31,7 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  newMessage: (message: string) => void;
+  newMessage: (message: string, isThinking?: boolean) => void;
   newUser: (ack: (user: User) => void) => void;
   newName: (name: string, ack: (message: string) => void) => void;
   typing: (user: User, isTyping: boolean) => void;

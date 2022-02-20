@@ -8,6 +8,7 @@ export type Message = {
   timestamp: number;
   text: string;
   sender: User;
+  isThinking: boolean;
 };
 
 export enum ClientEvents {

@@ -47,23 +47,27 @@ export default (
     // Update users to remaining users
     io.emit(ServerEvents.NEW_USER, users);
   });
-  socket.on(ClientEvents.NEW_MESSAGE, (message: string) => {
-    const sender = users.find((u) => u.id === socket.data.id) || {
-      id: socket.data.id || "",
-      nickname: "Unknown",
-    };
+  socket.on(
+    ClientEvents.NEW_MESSAGE,
+    (message: string, isThinking?: boolean) => {
+      const sender = users.find((u) => u.id === socket.data.id) || {
+        id: socket.data.id || "",
+        nickname: "Unknown",
+      };
 
-    const newMessage: Message = {
-      id: uuidv4(),
-      timestamp: +new Date(),
-      text: message,
-      sender,
-    };
+      const newMessage: Message = {
+        id: uuidv4(),
+        timestamp: +new Date(),
+        text: message,
+        sender,
+        isThinking: !!isThinking,
+      };
 
-    messages = [...messages, newMessage];
+      messages = [...messages, newMessage];
 
-    io.emit(ServerEvents.NEW_MESSAGE, messages);
-  });
+      io.emit(ServerEvents.NEW_MESSAGE, messages);
+    }
+  );
 
   socket.on(
     ClientEvents.NEW_NAME,
