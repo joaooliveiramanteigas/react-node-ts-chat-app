@@ -1,4 +1,6 @@
 import { Server, Socket } from "socket.io";
+
+import { v4 as uuidv4 } from "uuid";
 import {
   ClientEvents,
   ClientToServerEvents,
@@ -8,8 +10,7 @@ import {
   ServerToClientEvents,
   SocketData,
   User,
-} from "..";
-import { v4 as uuidv4 } from "uuid";
+} from "../types/socket";
 
 let users: User[] = [];
 let messages: Message[] = [];
@@ -28,6 +29,24 @@ export default (
     SocketData
   >
 ) => {
+  socket.on(ClientEvents.NEW_USER, (ack: (user: User) => void) => {
+    const id = uuidv4();
+    const defaultNickname = "Unknown";
+
+    const newUser: User = {
+      id,
+      nickname: defaultNickname,
+    };
+    socket.data.id = id;
+    socket.data.nickname = defaultNickname;
+
+    users.push(newUser);
+
+    // Send the current user to the client
+    ack(newUser);
+    // Update users to remaining users
+    io.emit(ServerEvents.NEW_USER, users);
+  });
   socket.on(ClientEvents.NEW_MESSAGE, (message: string) => {
     const sender = users.find((u) => u.id === socket.data.id) || {
       id: socket.data.id || "",
