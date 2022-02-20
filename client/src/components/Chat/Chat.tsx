@@ -67,6 +67,16 @@ const Chat = ({}: ChatProps): JSX.Element => {
       });
     });
 
+    socket.on(
+      ServerEvents.COUNTDOWN,
+      (time: number, url: string, user?: User) => {
+        dispatch({
+          type: ChatActionTypes.COUNTDOWN,
+          payload: { user, time, url },
+        });
+      }
+    );
+
     socket.on(ServerEvents.LOGOUT, (disconnectedUser: User) => {
       dispatch({
         type: ChatActionTypes.REMOVE_USER,
@@ -152,11 +162,27 @@ const Chat = ({}: ChatProps): JSX.Element => {
       if (specialAction.type === MessageCommands.HIGHLIGHT) {
         socket.emit(ClientEvents.NEW_MESSAGE, specialAction.value, false, true);
       }
+      if (specialAction.type === MessageCommands.COUNTDOWN) {
+        socket.emit(
+          ClientEvents.COUNTDOWN,
+          Number(specialAction.value),
+          specialAction.url,
+          state.user
+        );
+      }
     }
 
     setInputValue("");
     state.user && socket.emit(ClientEvents.TYPING, state.user, false);
   };
+
+  if (state.countdown.isActive) {
+    if (state.countdown.url !== "")
+      setTimeout(
+        () => (window.location.href = state.countdown.url),
+        state.countdown.time * 1000
+      );
+  }
   return (
     <main>
       {/* <Debugger chatState={state} /> */}

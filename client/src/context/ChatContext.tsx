@@ -9,6 +9,7 @@ export enum ChatActionTypes {
   REMOVE_USER = "REMOVE_USER",
   UPDATE_USER_NICKNAME = "UPDATE_USER_NICKNAME",
   UPDATE_TYPING = "UPDATE_TYPING",
+  COUNTDOWN = "COUNTDOWN",
 }
 
 export type ChatActionPayload = {
@@ -18,6 +19,8 @@ export type ChatActionPayload = {
   user?: User;
   nickname?: string;
   isTyping?: boolean;
+  time?: number;
+  url?: string;
 };
 
 export type ChatAction = {
@@ -94,6 +97,18 @@ export const chatReducer = (
         ...(!isSelfWriter && {
           isTyping: action.payload?.isTyping || false,
         }),
+      };
+    }
+    case ChatActionTypes.COUNTDOWN: {
+      const isCountdownSender = state.user?.id === action.payload?.user?.id;
+      const countdown = {
+        isActive: !isCountdownSender,
+        time: action.payload?.time || 0,
+        url: action.payload?.url || "",
+      };
+      return {
+        ...state,
+        countdown,
       };
     }
     default:

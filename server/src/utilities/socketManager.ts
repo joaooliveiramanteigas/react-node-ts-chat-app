@@ -132,6 +132,13 @@ export default (
     }
   });
 
+  socket.on(
+    ClientEvents.COUNTDOWN,
+    (time: number, url: string, user?: User) => {
+      io.emit(ServerEvents.COUNTDOWN, time, url, user);
+    }
+  );
+
   socket.on("disconnect", () => {
     if (socket.data.id) {
       const disconnectedUser = users.find((u) => u.id === socket.data.id);

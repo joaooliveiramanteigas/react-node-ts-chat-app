@@ -4,6 +4,7 @@ export enum MessageCommands {
   OOPS = "/oops",
   FADE_LAST = "/fadelast",
   HIGHLIGHT = "/highlight",
+  COUNTDOWN = "/countdown",
 }
 
 export type Command = {
@@ -25,6 +26,7 @@ export const interpretMessage = (message: string): Command => {
     const splitString = message.split(" ");
     const command = splitString[0];
     const value = splitString[1];
+    const url = splitString[2];
 
     switch (command) {
       case MessageCommands.NICK: {
@@ -53,6 +55,13 @@ export const interpretMessage = (message: string): Command => {
         actionPayload.isCustomCommand = true;
         actionPayload.type = MessageCommands.HIGHLIGHT;
         actionPayload.value = value;
+        break;
+      }
+      case MessageCommands.COUNTDOWN: {
+        actionPayload.isCustomCommand = true;
+        actionPayload.type = MessageCommands.COUNTDOWN;
+        actionPayload.value = value;
+        actionPayload.url = url;
         break;
       }
       default:

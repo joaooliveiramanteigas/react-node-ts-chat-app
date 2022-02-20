@@ -12,15 +12,16 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
   const intersection = useIntersectionObserver(messageRef, { threshold: 0.7 });
   const isVisible = !!intersection?.isIntersecting;
 
+  if (!user) return <></>;
+
   const sender = message.sender.nickname || "Unknown";
 
-  const isSender = message.sender.id === user?.id;
+  const isSender = message.sender.id === user.id;
 
   const date = new Date(message.timestamp);
   const formatedDate = `${date.getHours()}:${date.getMinutes()}`;
 
-  const { isThinking, isFaded, isHighlighted } = message;
-
+  const { isFaded, isHighlighted, isThinking } = message;
   return (
     <div
       style={{
