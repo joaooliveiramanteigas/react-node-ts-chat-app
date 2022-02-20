@@ -20,6 +20,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
     socket.on("connect", () => {});
 
     socket.emit(ClientEvents.NEW_USER, (currentUser: User) => {
+      debugger;
       dispatch({
         type: ChatActionTypes.UPDATE_USER,
         payload: { user: currentUser },

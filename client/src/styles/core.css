@@ -56,11 +56,16 @@ main {
   min-width: var(--message-width);
   min-height: var(--message-height);
   max-height: 120px;
+  opacity: 0;
   font-size: 1.5rem;
   transition: 150ms;
   transform: translate(100deg);
   box-shadow: 10px 5px 5px black;
   max-width: 100%;
+}
+.show {
+  transform: translate(0deg);
+  opacity: 1;
 }
 .message-info {
   display: flex;

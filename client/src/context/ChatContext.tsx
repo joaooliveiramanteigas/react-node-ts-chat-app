@@ -60,7 +60,9 @@ export const chatReducer = (
     case ChatActionTypes.REPLACE_MESSAGES: {
       return { ...state, messages: action.payload?.messages || [] };
     }
-
+    case ChatActionTypes.UPDATE_USER: {
+      return { ...state, user: action.payload?.user };
+    }
     default:
       return state;
   }
