@@ -49,7 +49,7 @@ export default (
   });
   socket.on(
     ClientEvents.NEW_MESSAGE,
-    (message: string, isThinking?: boolean) => {
+    (message: string, isThinking?: boolean, isHighlighted?: boolean) => {
       const sender = users.find((u) => u.id === socket.data.id) || {
         id: socket.data.id || "",
         nickname: "Unknown",
@@ -62,6 +62,7 @@ export default (
         sender,
         isThinking: !!isThinking,
         isFaded: false,
+        isHighlighted: !!isHighlighted,
       };
 
       messages = [...messages, newMessage];

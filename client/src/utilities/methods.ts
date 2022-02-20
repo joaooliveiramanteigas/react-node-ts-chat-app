@@ -3,6 +3,7 @@ export enum MessageCommands {
   THINK = "/think",
   OOPS = "/oops",
   FADE_LAST = "/fadelast",
+  HIGHLIGHT = "/highlight",
 }
 
 export type Command = {
@@ -46,6 +47,12 @@ export const interpretMessage = (message: string): Command => {
       case MessageCommands.FADE_LAST: {
         actionPayload.isCustomCommand = true;
         actionPayload.type = MessageCommands.FADE_LAST;
+        break;
+      }
+      case MessageCommands.HIGHLIGHT: {
+        actionPayload.isCustomCommand = true;
+        actionPayload.type = MessageCommands.HIGHLIGHT;
+        actionPayload.value = value;
         break;
       }
       default:

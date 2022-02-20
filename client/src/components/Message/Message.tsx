@@ -19,7 +19,7 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
   const date = new Date(message.timestamp);
   const formatedDate = `${date.getHours()}:${date.getMinutes()}`;
 
-  const { isThinking, isFaded } = message;
+  const { isThinking, isFaded, isHighlighted } = message;
 
   return (
     <div
@@ -37,6 +37,10 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
             float: `${isSender ? "right" : "left"}`,
             backgroundColor: `${isSender ? "#BFE3B4" : "#0047AB"}`,
             ...(isThinking && { color: "darkgray" }),
+            ...(isHighlighted && {
+              fontSize: "1.65rem",
+              backgroundColor: `${isSender ? "#b3d59a" : "#087596"}`,
+            }),
           }}
         >
           {message.text}

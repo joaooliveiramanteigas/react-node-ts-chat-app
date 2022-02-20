@@ -10,6 +10,7 @@ export type Message = {
   sender: User;
   isThinking: boolean;
   isFaded: boolean;
+  isHighlighted: boolean;
 };
 
 export enum ClientEvents {
@@ -34,7 +35,11 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  newMessage: (message: string, isThinking?: boolean) => void;
+  newMessage: (
+    message: string,
+    isThinking?: boolean,
+    isHighlighted?: boolean
+  ) => void;
   newUser: (ack: (user: User) => void) => void;
   newName: (name: string, ack: (message: string) => void) => void;
   typing: (user: User, isTyping: boolean) => void;

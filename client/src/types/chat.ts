@@ -10,4 +10,5 @@ export type Message = {
   sender: User;
   isThinking: boolean;
   isFaded: boolean;
+  isHighlighted: boolean;
 };

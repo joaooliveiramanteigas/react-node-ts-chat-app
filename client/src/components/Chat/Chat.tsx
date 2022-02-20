@@ -149,6 +149,9 @@ const Chat = ({}: ChatProps): JSX.Element => {
       if (specialAction.type === MessageCommands.FADE_LAST) {
         socket.emit(ClientEvents.FADE_LAST, state.user);
       }
+      if (specialAction.type === MessageCommands.HIGHLIGHT) {
+        socket.emit(ClientEvents.NEW_MESSAGE, specialAction.value, false, true);
+      }
     }
 
     setInputValue("");
