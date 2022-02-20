@@ -143,6 +143,9 @@ const Chat = ({}: ChatProps): JSX.Element => {
       if (specialAction.type === MessageCommands.THINK) {
         socket.emit(ClientEvents.NEW_MESSAGE, specialAction.value, true);
       }
+      if (specialAction.type === MessageCommands.OOPS) {
+        socket.emit(ClientEvents.REMOVE_LAST_MESSAGE, state.user);
+      }
     }
 
     setInputValue("");

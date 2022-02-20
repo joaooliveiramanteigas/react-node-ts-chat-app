@@ -1,6 +1,7 @@
 export enum MessageCommands {
   NICK = "/nick",
   THINK = "/think",
+  OOPS = "/oops",
 }
 
 export type Command = {
@@ -34,6 +35,11 @@ export const interpretMessage = (message: string): Command => {
         actionPayload.isCustomCommand = true;
         actionPayload.type = MessageCommands.THINK;
         actionPayload.value = value;
+        break;
+      }
+      case MessageCommands.OOPS: {
+        actionPayload.isCustomCommand = true;
+        actionPayload.type = MessageCommands.OOPS;
         break;
       }
       default:

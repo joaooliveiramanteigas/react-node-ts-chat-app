@@ -87,6 +87,26 @@ export default (
     io.emit(ServerEvents.TYPING, user, isTyping);
   });
 
+  socket.on(ClientEvents.REMOVE_LAST_MESSAGE, (user?: User) => {
+    if (!user) return;
+    const lastMessageSentByUser = messages
+      .filter((m) => m.sender.id === user.id)
+      .sort((a, b) => {
+        if (a.timestamp > b.timestamp) return -1;
+        if (a.timestamp < b.timestamp) return 1;
+        return 0;
+      })[0];
+    const messageIndexToBeRemoved = messages.findIndex(
+      (m) => m.id === lastMessageSentByUser.id
+    );
+
+    if (messageIndexToBeRemoved >= 0) {
+      messages.splice(messageIndexToBeRemoved, 1);
+
+      io.emit(ServerEvents.NEW_MESSAGE, messages);
+    }
+  });
+
   socket.on("disconnect", () => {
     if (socket.data.id) {
       const disconnectedUser = users.find((u) => u.id === socket.data.id);

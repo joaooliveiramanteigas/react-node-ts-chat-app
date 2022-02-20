@@ -16,6 +16,7 @@ export enum ClientEvents {
   NEW_USER = "newUser",
   NEW_NAME = "newName",
   TYPING = "typing",
+  REMOVE_LAST_MESSAGE = "removeLastMessage",
 }
 export enum ServerEvents {
   NEW_MESSAGE = "newMessage",
@@ -35,6 +36,7 @@ export interface ClientToServerEvents {
   newUser: (ack: (user: User) => void) => void;
   newName: (name: string, ack: (message: string) => void) => void;
   typing: (user: User, isTyping: boolean) => void;
+  removeLastMessage: (user?: User) => void;
 }
 export interface InterServerEvents {}
 export interface SocketData {
