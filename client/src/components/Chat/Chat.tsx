@@ -88,7 +88,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
       socket.disconnect();
       setHasDisconnected(true);
     };
-  }, []);
+  }, [dispatch]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value !== "") {
