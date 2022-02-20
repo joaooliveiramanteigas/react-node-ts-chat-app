@@ -25,12 +25,25 @@ const Chat = ({}: ChatProps): JSX.Element => {
 
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
 
+  // Effects
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      if (
+        chatWindowRef.current?.scrollTop + 1000 >
+        chatWindowRef.current?.scrollHeight
+      ) {
+        chatWindowRef.current.scrollTo({
+          top: chatWindowRef.current?.scrollHeight || 0,
+        });
+      }
+    }
+  }, [state.messages]);
   useEffect(() => {
     socket.on("connect", () => {});
 
     socket.emit(ClientEvents.NEW_USER, (currentUser: User) => {
-      debugger;
       dispatch({
         type: ChatActionTypes.UPDATE_USER,
         payload: { user: currentUser },
@@ -139,7 +152,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
     <main>
       {/* <Debugger chatState={state} /> */}
 
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         {!hasDisconnected ? (
           state.messages.length === 0 ? (
             <div className="loading-container">
