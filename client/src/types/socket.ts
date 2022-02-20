@@ -13,6 +13,7 @@ export type Message = {
 export enum ClientEvents {
   NEW_MESSAGE = "newMessage",
   NEW_USER = "newUser",
+  NEW_NAME = "newName",
 }
 export enum ServerEvents {
   NEW_MESSAGE = "newMessage",
@@ -26,8 +27,9 @@ export interface ServerToClientEvents {
 }
 
 export interface ClientToServerEvents {
-  newMessage: (message: string) => void;
+  newMessage: (message: string, isThinking?: boolean) => void;
   newUser: (ack: (user: User) => void) => void;
+  newName: (name: string, ack: (message: string) => void) => void;
 }
 export interface InterServerEvents {}
 export interface SocketData {

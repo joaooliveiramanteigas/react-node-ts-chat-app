@@ -2,6 +2,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import ChatContext, { ChatActionTypes } from "../../context/ChatContext";
 import { Message as MessageType, User } from "../../types/chat";
 import { ClientEvents, ServerEvents } from "../../types/socket";
+import { interpretMessage, MessageCommands } from "../../utilities/methods";
 import { socket } from "../../utilities/socket";
 import InputWindow from "../InputWindow";
 import Message from "../Message";
@@ -75,19 +76,25 @@ const Chat = ({}: ChatProps): JSX.Element => {
       return;
     }
 
-    if (inputValue === "") {
-      if (inputRef.current) {
-        inputRef.current.className = `${inputRef.current?.className} shake`;
+    const specialAction = interpretMessage(inputValue);
 
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.className = `input`;
-          }
-        }, 1000);
+    if (!specialAction.isCustomCommand) {
+      socket.emit(ClientEvents.NEW_MESSAGE, inputValue);
+    } else {
+      if (specialAction.type === MessageCommands.NICK) {
+        const newNickname = specialAction.value;
+        socket.emit(ClientEvents.NEW_NAME, newNickname, (nickname) => {
+          dispatch({
+            type: ChatActionTypes.UPDATE_USER_NICKNAME,
+            payload: { nickname },
+          });
+        });
       }
-      return;
+
+      if (specialAction.type === MessageCommands.THINK) {
+        socket.emit(ClientEvents.NEW_MESSAGE, specialAction.value, true);
+      }
     }
-    socket.emit(ClientEvents.NEW_MESSAGE, inputValue);
 
     setInputValue("");
   };

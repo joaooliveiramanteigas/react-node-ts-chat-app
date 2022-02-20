@@ -65,6 +65,20 @@ export default (
     io.emit(ServerEvents.NEW_MESSAGE, messages);
   });
 
+  socket.on(
+    ClientEvents.NEW_NAME,
+    (value: string, ack: (nickname: string) => void) => {
+      const userId = socket.data.id;
+      const matchIndex = users.findIndex((u) => u.id === userId);
+
+      if (matchIndex !== -1)
+        users[matchIndex] = { ...users[matchIndex], nickname: value };
+
+      ack(value);
+      io.emit(ServerEvents.NEW_USER, users);
+    }
+  );
+
   socket.on("disconnect", () => {
     if (socket.data.id) {
       const disconnectedUser = users.find((u) => u.id === socket.data.id);

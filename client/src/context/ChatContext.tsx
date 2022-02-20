@@ -7,6 +7,7 @@ export enum ChatActionTypes {
   ADD_MESSAGE = "ADD_MESSAGE",
   UPDATE_USER = "UPDATE_USER",
   REMOVE_USER = "REMOVE_USER",
+  UPDATE_USER_NICKNAME = "UPDATE_USER_NICKNAME",
 }
 
 export type ChatActionPayload = {
@@ -14,6 +15,7 @@ export type ChatActionPayload = {
   message?: MessageType;
   messages?: MessageType[];
   user?: User;
+  nickname?: string;
 };
 
 export type ChatAction = {
@@ -76,6 +78,12 @@ export const chatReducer = (
         (u) => u.id !== action.payload?.user?.id
       );
       return { ...state, users };
+    }
+    case ChatActionTypes.UPDATE_USER_NICKNAME: {
+      return {
+        ...state,
+        user: { id: state.user?.id || "", nickname: action.payload?.nickname },
+      };
     }
     default:
       return state;
