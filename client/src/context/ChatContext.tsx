@@ -6,6 +6,7 @@ export enum ChatActionTypes {
   REPLACE_MESSAGES = "REPLACE_MESSAGES",
   ADD_MESSAGE = "ADD_MESSAGE",
   UPDATE_USER = "UPDATE_USER",
+  REMOVE_USER = "REMOVE_USER",
 }
 
 export type ChatActionPayload = {
@@ -57,11 +58,24 @@ export const chatReducer = (
         ],
       };
     }
+    case ChatActionTypes.REPLACE_USERS: {
+      const users = action.payload?.users || [];
+      return {
+        ...state,
+        users,
+      };
+    }
     case ChatActionTypes.REPLACE_MESSAGES: {
       return { ...state, messages: action.payload?.messages || [] };
     }
     case ChatActionTypes.UPDATE_USER: {
       return { ...state, user: action.payload?.user };
+    }
+    case ChatActionTypes.REMOVE_USER: {
+      const users = state.users.filter(
+        (u) => u.id !== action.payload?.user?.id
+      );
+      return { ...state, users };
     }
     default:
       return state;

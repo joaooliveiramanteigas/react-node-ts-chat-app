@@ -65,5 +65,19 @@ export default (
     io.emit(ServerEvents.NEW_MESSAGE, messages);
   });
 
-  socket.on("disconnect", () => {});
+  socket.on("disconnect", () => {
+    if (socket.data.id) {
+      const disconnectedUser = users.find((u) => u.id === socket.data.id);
+
+      users = users.filter((u) => socket.data.id !== u.id);
+
+      io.emit(
+        ServerEvents.LOGOUT,
+        disconnectedUser || {
+          id: socket.data.id,
+          nickname: socket.data.nickname,
+        }
+      );
+    }
+  });
 };

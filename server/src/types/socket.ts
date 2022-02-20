@@ -17,10 +17,12 @@ export enum ClientEvents {
 export enum ServerEvents {
   NEW_MESSAGE = "newMessage",
   NEW_USER = "newUser",
+  LOGOUT = "logout",
 }
 export interface ServerToClientEvents {
   newMessage: (messages: Message[]) => void;
   newUser: (users: User[]) => void;
+  logout: (disconnectedUser: User) => void;
 }
 
 export interface ClientToServerEvents {

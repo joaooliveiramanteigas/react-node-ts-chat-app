@@ -37,6 +37,13 @@ const Chat = ({}: ChatProps): JSX.Element => {
       });
     });
 
+    socket.on(ServerEvents.LOGOUT, (disconnectedUser: User) => {
+      dispatch({
+        type: ChatActionTypes.REMOVE_USER,
+        payload: { user: disconnectedUser },
+      });
+    });
+
     return () => {
       socket.disconnect();
       setHasDisconnected(true);
