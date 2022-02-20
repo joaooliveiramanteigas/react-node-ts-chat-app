@@ -10,10 +10,14 @@
     */
   --header-height: 76px;
   --page-gutters-responsive: 16px;
+  --message-width: 40px;
+  --message-height: 30px;
 }
 
 @media (min-width: 48em) {
   :root {
     --page-gutters-responsive: 60px;
+    --message-width: 60px;
+    --message-height: 40px;
   }
 }
