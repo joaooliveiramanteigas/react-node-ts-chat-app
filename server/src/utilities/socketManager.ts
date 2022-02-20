@@ -61,6 +61,7 @@ export default (
         text: message,
         sender,
         isThinking: !!isThinking,
+        isFaded: false,
       };
 
       messages = [...messages, newMessage];
@@ -102,6 +103,29 @@ export default (
 
     if (messageIndexToBeRemoved >= 0) {
       messages.splice(messageIndexToBeRemoved, 1);
+
+      io.emit(ServerEvents.NEW_MESSAGE, messages);
+    }
+  });
+
+  socket.on(ClientEvents.FADE_LAST, (user?: User) => {
+    if (!user) return;
+    const lastMessageSentByUser = messages
+      .filter((m) => m.sender.id === user.id)
+      .sort((a, b) => {
+        if (a.timestamp > b.timestamp) return -1;
+        if (a.timestamp < b.timestamp) return 1;
+        return 0;
+      })[0];
+    const messageIndexToBeFaded = messages.findIndex(
+      (m) => m.id === lastMessageSentByUser.id
+    );
+
+    if (messageIndexToBeFaded >= 0) {
+      messages[messageIndexToBeFaded] = {
+        ...messages[messageIndexToBeFaded],
+        isFaded: true,
+      };
 
       io.emit(ServerEvents.NEW_MESSAGE, messages);
     }

@@ -5,8 +5,9 @@ export type User = {
 
 export type Message = {
   id: string;
-  text: string;
   timestamp: number;
+  text: string;
   sender: User;
   isThinking: boolean;
+  isFaded: boolean;
 };

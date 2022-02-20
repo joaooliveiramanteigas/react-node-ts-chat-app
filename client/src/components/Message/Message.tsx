@@ -19,13 +19,14 @@ const Message = ({ message, user }: MessageProps): JSX.Element => {
   const date = new Date(message.timestamp);
   const formatedDate = `${date.getHours()}:${date.getMinutes()}`;
 
-  const { isThinking } = message;
+  const { isThinking, isFaded } = message;
 
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
+        ...(isFaded && { opacity: "0.1" }),
       }}
       ref={messageRef}
     >
