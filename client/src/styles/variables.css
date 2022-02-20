@@ -1,0 +1,19 @@
+:root {
+  /**
+     * Colors.
+     */
+  --col-1: #08587e;
+  --col-body: #808080;
+
+  /**
+    * General.
+    */
+  --header-height: 76px;
+  --page-gutters-responsive: 16px;
+}
+
+@media (min-width: 48em) {
+  :root {
+    --page-gutters-responsive: 60px;
+  }
+}
