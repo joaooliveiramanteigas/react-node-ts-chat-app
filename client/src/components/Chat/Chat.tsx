@@ -9,6 +9,15 @@ import Message from "../Message";
 
 type ChatProps = {};
 
+enum SmileCommands {
+  SMILE = "(smile)",
+  WINK = "(wink)",
+}
+enum SmileValues {
+  SMILE = "🙂",
+  WINK = "😉",
+}
+
 // eslint-disable-next-line no-empty-pattern
 const Chat = ({}: ChatProps): JSX.Element => {
   const { state, dispatch } = useContext(ChatContext);
@@ -64,7 +73,22 @@ const Chat = ({}: ChatProps): JSX.Element => {
     } else {
       state.user && socket.emit(ClientEvents.TYPING, state.user, false);
     }
-    setInputValue(event.target.value);
+
+    let parseSmiles = event.target.value;
+    if (event.target.value.includes(SmileCommands.SMILE)) {
+      parseSmiles = parseSmiles.replaceAll(
+        SmileCommands.SMILE,
+        SmileValues.SMILE
+      );
+    }
+
+    if (event.target.value.includes(SmileCommands.WINK)) {
+      parseSmiles = parseSmiles.replaceAll(
+        SmileCommands.WINK,
+        SmileValues.WINK
+      );
+    }
+    setInputValue(parseSmiles);
   };
 
   const handleSubmit = (
