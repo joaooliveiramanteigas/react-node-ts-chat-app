@@ -1,15 +1,13 @@
 import { Server, Socket } from "socket.io";
-
 import { v4 as uuidv4 } from "uuid";
+import { Message, User } from "../types/chat";
 import {
   ClientEvents,
   ClientToServerEvents,
   InterServerEvents,
-  Message,
   ServerEvents,
   ServerToClientEvents,
   SocketData,
-  User,
 } from "../types/socket";
 
 let users: User[] = [];

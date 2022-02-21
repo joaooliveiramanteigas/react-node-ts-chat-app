@@ -60,10 +60,9 @@ main {
   padding: 10px 3px;
   min-width: var(--message-width);
   min-height: var(--message-height);
-  max-height: 120px;
   font-size: 1.5rem;
   opacity: 0;
-  transition: 150ms;
+  transition: 300ms;
   transform: translate(100deg);
   box-shadow: 10px 5px 5px black;
   max-width: 100%;

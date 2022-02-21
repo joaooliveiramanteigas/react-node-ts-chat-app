@@ -70,3 +70,27 @@ export const interpretMessage = (message: string): Command => {
   }
   return actionPayload;
 };
+
+enum SmileCommands {
+  SMILE = "(smile)",
+  WINK = "(wink)",
+}
+enum SmileValues {
+  SMILE = "🙂",
+  WINK = "😉",
+}
+
+export const parseSmiles = (value: string): string => {
+  let parseSmiles = value;
+  if (value.includes(SmileCommands.SMILE)) {
+    parseSmiles = parseSmiles.replaceAll(
+      SmileCommands.SMILE,
+      SmileValues.SMILE
+    );
+  }
+
+  if (value.includes(SmileCommands.WINK)) {
+    parseSmiles = parseSmiles.replaceAll(SmileCommands.WINK, SmileValues.WINK);
+  }
+  return parseSmiles;
+};

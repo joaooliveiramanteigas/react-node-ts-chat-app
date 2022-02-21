@@ -1,5 +1,7 @@
-import { useReducer, createContext, Dispatch } from "react";
+import { useReducer, createContext, useState, useEffect } from "react";
 import { Message as MessageType, User } from "../types/chat";
+import { ClientEvents, ServerEvents } from "../types/socket";
+import { socket } from "../utilities/socket";
 
 export enum ChatActionTypes {
   REPLACE_USERS = "REPLACE_USERS",
@@ -118,12 +120,14 @@ export const chatReducer = (
 
 type ContextProps = {
   state: ChatState;
-  dispatch: Dispatch<ChatAction>;
+  isDisconnected: boolean;
+  updateUserNickname: (nickname: string) => void;
 };
 
 const contextInitialState: ContextProps = {
   state: initialState,
-  dispatch: () => null,
+  isDisconnected: false,
+  updateUserNickname: () => null,
 };
 
 const ChatContext = createContext<ContextProps>(contextInitialState);
@@ -138,9 +142,66 @@ export const ChatProvider = ({
   children: JSX.Element;
 }): JSX.Element => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
+  const [isDisconnected, setIsDisconnected] = useState(false);
 
+  useEffect(() => {
+    socket.on("connect", () => {});
+
+    socket.emit(ClientEvents.NEW_USER, (currentUser: User) => {
+      dispatch({
+        type: ChatActionTypes.UPDATE_USER,
+        payload: { user: currentUser },
+      });
+    });
+    socket.on(ServerEvents.NEW_USER, (users: User[]) => {
+      dispatch({ type: ChatActionTypes.REPLACE_USERS, payload: { users } });
+    });
+
+    socket.on(ServerEvents.NEW_MESSAGE, (messages: MessageType[]) => {
+      dispatch({
+        type: ChatActionTypes.REPLACE_MESSAGES,
+        payload: { messages },
+      });
+    });
+
+    socket.on(ServerEvents.TYPING, (user: User, isTyping: boolean) => {
+      dispatch({
+        type: ChatActionTypes.UPDATE_TYPING,
+        payload: { user, isTyping },
+      });
+    });
+
+    socket.on(
+      ServerEvents.COUNTDOWN,
+      (time: number, url: string, user?: User) => {
+        dispatch({
+          type: ChatActionTypes.COUNTDOWN,
+          payload: { user, time, url },
+        });
+      }
+    );
+
+    socket.on(ServerEvents.LOGOUT, (disconnectedUser: User) => {
+      dispatch({
+        type: ChatActionTypes.REMOVE_USER,
+        payload: { user: disconnectedUser },
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+      setIsDisconnected(true);
+    };
+  }, [dispatch]);
+
+  const updateUserNickname = (nickname: string) => {
+    dispatch({
+      type: ChatActionTypes.UPDATE_USER_NICKNAME,
+      payload: { nickname },
+    });
+  };
   return (
-    <ChatContext.Provider value={{ state, dispatch }}>
+    <ChatContext.Provider value={{ state, isDisconnected, updateUserNickname }}>
       {children}
     </ChatContext.Provider>
   );

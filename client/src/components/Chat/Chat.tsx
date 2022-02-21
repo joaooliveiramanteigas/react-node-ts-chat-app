@@ -1,94 +1,55 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import ChatContext, { ChatActionTypes } from "../../context/ChatContext";
-import { Message as MessageType, User } from "../../types/chat";
-import { ClientEvents, ServerEvents } from "../../types/socket";
-import { interpretMessage, MessageCommands } from "../../utilities/methods";
+import ChatContext from "../../context/ChatContext";
+import { ClientEvents } from "../../types/socket";
+import {
+  interpretMessage,
+  MessageCommands,
+  parseSmiles,
+} from "../../utilities/methods";
 import { socket } from "../../utilities/socket";
 import InputWindow from "../InputWindow";
 import Message from "../Message";
 
 type ChatProps = {};
 
-enum SmileCommands {
-  SMILE = "(smile)",
-  WINK = "(wink)",
-}
-enum SmileValues {
-  SMILE = "🙂",
-  WINK = "😉",
-}
-
 // eslint-disable-next-line no-empty-pattern
 const Chat = ({}: ChatProps): JSX.Element => {
-  const { state, dispatch } = useContext(ChatContext);
-  const [hasDisconnected, setHasDisconnected] = useState(false);
+  const { state, isDisconnected, updateUserNickname } = useContext(ChatContext);
 
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
-  // Effects
-  useEffect(() => {
+  const shakeElement = () => {
+    if (inputRef.current) {
+      inputRef.current.className = `${inputRef.current?.className} shake`;
+
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.className = `input`;
+        }
+      }, 1000);
+    }
+  };
+
+  // Scroll chat down if scroll is near the last message sent or bottom of the chat
+  const scrollChatDown = () => {
     if (chatWindowRef.current) {
-      if (
-        chatWindowRef.current?.scrollTop + 1000 >
-        chatWindowRef.current?.scrollHeight
-      ) {
+      const maxHeight = chatWindowRef.current.scrollHeight;
+      const currentScroll = chatWindowRef.current.scrollTop;
+      const isScrollNearBottom = currentScroll + 1000 > maxHeight;
+
+      if (isScrollNearBottom) {
         chatWindowRef.current.scrollTo({
-          top: chatWindowRef.current?.scrollHeight || 0,
+          top: chatWindowRef.current.scrollHeight || 0,
         });
       }
     }
-  }, [state.messages]);
+  };
+  // Effects
   useEffect(() => {
-    socket.on("connect", () => {});
-
-    socket.emit(ClientEvents.NEW_USER, (currentUser: User) => {
-      dispatch({
-        type: ChatActionTypes.UPDATE_USER,
-        payload: { user: currentUser },
-      });
-    });
-    socket.on(ServerEvents.NEW_USER, (users: User[]) => {
-      dispatch({ type: ChatActionTypes.REPLACE_USERS, payload: { users } });
-    });
-
-    socket.on(ServerEvents.NEW_MESSAGE, (messages: MessageType[]) => {
-      dispatch({
-        type: ChatActionTypes.REPLACE_MESSAGES,
-        payload: { messages },
-      });
-    });
-
-    socket.on(ServerEvents.TYPING, (user: User, isTyping: boolean) => {
-      dispatch({
-        type: ChatActionTypes.UPDATE_TYPING,
-        payload: { user, isTyping },
-      });
-    });
-
-    socket.on(
-      ServerEvents.COUNTDOWN,
-      (time: number, url: string, user?: User) => {
-        dispatch({
-          type: ChatActionTypes.COUNTDOWN,
-          payload: { user, time, url },
-        });
-      }
-    );
-
-    socket.on(ServerEvents.LOGOUT, (disconnectedUser: User) => {
-      dispatch({
-        type: ChatActionTypes.REMOVE_USER,
-        payload: { user: disconnectedUser },
-      });
-    });
-
-    return () => {
-      socket.disconnect();
-      setHasDisconnected(true);
-    };
-  }, [dispatch]);
+    scrollChatDown();
+  }, [state.messages]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value !== "") {
@@ -97,21 +58,9 @@ const Chat = ({}: ChatProps): JSX.Element => {
       state.user && socket.emit(ClientEvents.TYPING, state.user, false);
     }
 
-    let parseSmiles = event.target.value;
-    if (event.target.value.includes(SmileCommands.SMILE)) {
-      parseSmiles = parseSmiles.replaceAll(
-        SmileCommands.SMILE,
-        SmileValues.SMILE
-      );
-    }
+    const parsedSmiles = parseSmiles(event.target.value);
 
-    if (event.target.value.includes(SmileCommands.WINK)) {
-      parseSmiles = parseSmiles.replaceAll(
-        SmileCommands.WINK,
-        SmileValues.WINK
-      );
-    }
-    setInputValue(parseSmiles);
+    setInputValue(parsedSmiles);
   };
 
   const handleSubmit = (
@@ -123,15 +72,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
 
     // Shake when empty string
     if (inputValue === "") {
-      if (inputRef.current) {
-        inputRef.current.className = `${inputRef.current?.className} shake`;
-
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.className = `input`;
-          }
-        }, 1000);
-      }
+      shakeElement();
       return;
     }
 
@@ -143,10 +84,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
       if (specialAction.type === MessageCommands.NICK) {
         const newNickname = specialAction.value;
         socket.emit(ClientEvents.NEW_NAME, newNickname, (nickname) => {
-          dispatch({
-            type: ChatActionTypes.UPDATE_USER_NICKNAME,
-            payload: { nickname },
-          });
+          updateUserNickname(nickname);
         });
       }
 
@@ -169,7 +107,9 @@ const Chat = ({}: ChatProps): JSX.Element => {
           specialAction.url,
           state.user
         );
+        // No command chosen
       }
+      shakeElement();
     }
 
     setInputValue("");
@@ -188,7 +128,7 @@ const Chat = ({}: ChatProps): JSX.Element => {
       {/* <Debugger chatState={state} /> */}
 
       <div className="chat-window" ref={chatWindowRef}>
-        {!hasDisconnected ? (
+        {!isDisconnected ? (
           state.messages.length === 0 ? (
             <div className="loading-container">
               <h1 style={{ textAlign: "center" }}>

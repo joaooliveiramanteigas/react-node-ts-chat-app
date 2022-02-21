@@ -1,17 +1,4 @@
-export type User = {
-  id: string;
-  nickname?: string;
-};
-
-export type Message = {
-  id: string;
-  timestamp: number;
-  text: string;
-  sender: User;
-  isThinking: boolean;
-  isFaded: boolean;
-  isHighlighted: boolean;
-};
+import { Message, User } from "./chat";
 
 export enum ClientEvents {
   NEW_MESSAGE = "newMessage",
@@ -28,7 +15,6 @@ export enum ServerEvents {
   LOGOUT = "logout",
   TYPING = "typing",
   COUNTDOWN = "countdown",
-
 }
 export interface ServerToClientEvents {
   newMessage: (messages: Message[]) => void;
